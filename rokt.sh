@@ -1,19 +1,21 @@
 #!/usr/bin/bash
-# rokt9c 
+# rokt9b 
 # ========================================
 function loadExternalValidators {
 # = = = = manually edit / insert external nodes into eVALS list: max = 15
 # format = 
 #             <doublequote>
 # Validator address <comma>
-#   Refrence number <comma>    { any two digit number EXCEPT 00 & 99 }
+#   Refrence number <comma>    { any two digit number EXCEPT 00 or 99 }
 #         Nick name <comma>    { any 5 chars }
-#     Validator URL <comma>    { just the URL no "http://" prefix no ":port" sufix }
+#     Validator URL <comma>    { just the URL no "https://" prefix no ":port" sufix }
 #               unk <comma>    { this makes space for the block height to be tracked }
 #         unk <doublequote>    { this makes space for the node status to be tracked }
 #
 # Sample:
 #         "e09ce22e0abfd8129776128c0c9b3836024d8c6e,01,POKT1,node1.mainnet.pocket.network,unk,unk"
+
+
 # = = = = 
         eVALS=(
         "e09ce22e0abfd8129776128c0c9b3836024d8c6e,01,POKT1,node1.mainnet.pocket.network,unk,unk"
@@ -86,7 +88,7 @@ lscreen=(
 	"CLB,AD,12,77,11,16,CurCLB,- "
 	"STK,C,8,65,21,1,CurSTK,Staked: "
 	"24B,NC,8,38,24,1,Cur24B,24h Chg: "
-	"VVV,AS,12,2,25,16,eVALS,"
+	"VVV,AS,12,2,26,16,eVALS,"
 	"NUM,N,5,43,20,1,CurNUM,Staked Vals: "
 	"NUM,N,5,66,20,1,CurAPP,Staked Apps: "
 	"TIM,MS,5,3,30,1,CurTIM,Next Block in: "
@@ -94,7 +96,7 @@ lscreen=(
 	"CHU,AD,12,36,27,16,CurCHU,= "
         )
 lscreentext=(
-	"0,1,ROKT v0.9.c - Ben@BenVan.com 2020/09/10 - Free and Open Source... enjoy!"
+	"0,1,ROKT v0.9.c - Ben@BenVan.com 2020/09/28 - Free and Open Source... enjoy!"
 	"10,4,External Validators "
 	"10,38,local chains.json "
 	"11,30,Chain =  URL"
@@ -104,7 +106,7 @@ lscreentext=(
         )
 
 qscreentext=(
-        "0,1,ROKT v0.9.c - Ben@BenVan.com 2020/09/05 - Free and Open Source... enjoy!"
+        "0,1,ROKT v0.9.c - Ben@BenVan.com 2020/09/28 - Free and Open Source... enjoy!"
 	"3,5,Queries (see stuff)"
 	"3,33,Actions (do stuff)"
 	"3,68,Changes (break stuff)"
@@ -208,14 +210,8 @@ function createMenuStrings {
 #    tmenu="static"
     Lmenu=""
     Fmenu=" \e[7m  ===== Beta Testing Menu ================= \e[0m
-    testing status:
-from: ubuntu 18.2 through: gnome_terminal to: ubuntu 20.04 Status: Rock and Roll!
-from: ubuntu 18.2 through: x-term to ubuntu 20.04 Status: NEARLY PERFECT.
-from: ubuntu 18.2 through: UXterm to ubuntu 20.04 Status: NEARLY PERFECT.
-from: ubuntu 18.2 through:  Putty to ubuntu 20.04 Status: NEARLY PERFECT.
-From: MacOS       through:  iTerm to Debian       Status: Good.
-From: IOS (Ipad)  through: Shelly to ubuntu 20.04 Status: NEARLY PERFECT.
-
+    You may need to manually increese the screen size:
+    Minimum screen size (100 colums 40 rows)
     Color test: ${RED}red ${GRN}green ${CYA}blue ${NC} none
     If you see:'qqqqqqqqqqq' instead of a streight line below:
     ${BON}qqqqqqqqqqq${BOF} set the terminal charset to: ISO-8859-16
@@ -235,10 +231,19 @@ From: IOS (Ipad)  through: Shelly to ubuntu 20.04 Status: NEARLY PERFECT.
     the Terminal Software: EG: putty, iterm, x-term, etc.
     the Server OS & version: EG: Ubuntu 20.04, Linux, etc.
 
-    Minimum screen size = 100 columns x 40 rows
-
     Thank you for helping test this tool.
-    -BenVan    "
+    -BenVan
+    testing status:
+
+from: ubuntu 18.2 through: gnome_terminal to: ubuntu 20.04 Status: Rock and Roll!
+from: ubuntu 18.2 through: x-term to ubuntu 20.04 Status: NEARLY PERFECT.
+from: ubuntu 18.2 through: UXterm to ubuntu 20.04 Status: NEARLY PERFECT.
+from: ubuntu 18.2 through:  Putty to ubuntu 20.04 Status: NEARLY PERFECT.
+From: MacOS       through:  iTerm to Debian       Status: Good.
+From: IOS (Ipad)  through: Shelly to ubuntu 20.04 Status: NEARLY PERFECT.
+
+    
+    "
   
    Cmenu=$Fmenu # set inital current menu to full menu
 }
@@ -288,7 +293,7 @@ function fRun {
 	then
 		if [ "$CurEHEI" != "" ]
 		then
-			CurSTA="Running xtrnl"
+			CurSTA="Running xtrnl${NC}"
 			CurRUN="Unknown    "
 		else
 		CurRUN="        "
@@ -379,7 +384,7 @@ function fNet {
 
 }
 function fNod {
-        CurNOD=$(pocket query node $CurVAL | grep "jailed") || error_exit "query node failed @line $LINENO."
+        CurNOD=$(pocket query node $CurVAL | grep "jailed") || error_exit "query node:$CurVAL: failed @line $LINENO."
 	CurNOD=${CurNOD:14:5}
 	if [ "${CurNOD:0:4}" == "true" ]
 	then
@@ -397,7 +402,7 @@ function fCla {
 	     	CurCLB="none"
 	else
 		CurCLA=("${CurCLAc[@]}")
-		CurCLB=("${CurCLAp[@]}")	       	
+		CurCLB=("${CurCLAp[@]}")	       
 	fi	
 }
 function fStk {
@@ -444,7 +449,7 @@ function fChj {
 		fi
 	  ;;
 	  0021 ) EthBlockHeight=""
-		EthBlockHeight=$(curl -s -m 1 POST --insecure -H "Content-Type: application/json" --data '{"jsonrpc":"2.0","method":"eth_blockNumber","params":[],"id":64}' ${CurCHU[$i]}  | grep -Po '((?<=result":.)|(?<=result":."))([^",\r\n]+)(?=[",\r\n]*)')
+		EthBlockHeight=$(curl -s -m 3 POST --insecure -H "Content-Type: application/json" --data '{"jsonrpc":"2.0","method":"eth_blockNumber","params":[],"id":64}' ${CurCHU[$i]}  | grep -Po '((?<=result":.)|(?<=result":."))([^",\r\n]+)(?=[",\r\n]*)')
 		if [ "$EthBlockHeight" != "" ]
 		then
                 CurCHJ[$i]="${GRN}${CurCHJ[$i]}${NC}"
@@ -453,7 +458,7 @@ function fChj {
 		fi
 		if [ "$fullText" == "full" ]
 		then
-		  echo $(curl -s -m 1 POST --insecure -H "Content-Type: application/json" --data '{"jsonrpc":"2.0","method":"eth_blockNumber","params":[],"id":64}' ${CurCHU[$i]})
+		  echo $(curl -s -m 3 POST --insecure -H "Content-Type: application/json" --data '{"jsonrpc":"2.0","method":"eth_blockNumber","params":[],"id":64}' ${CurCHU[$i]})
 		fi
 	  ;;
 	  esac
@@ -478,7 +483,7 @@ function fN00 {
       		readarray -td, a <<<"$item,"; unset 'a[-1]';
       		if [ "$valChoice" == "${a[1]}" ] || [ "$1" == "all" ] 
       		then
-#	     		CurVAL="${a[0]}"
+	     		CurVAL="${a[0]}"
 			Eurl="${a[3]}"
 			fE00 $Eurl
 			fNod
@@ -571,7 +576,7 @@ if [ "$d" == "live" ]; then
           eval y='$'$k
 	  for i in $y
           do
-	    line="${CGT}${j};${posC}H $disc"	  
+	    line="${CGT}${j};${posC}H ${NC}$disc"	  
             readarray -td, v <<<"$i,"; unset 'v[-1]';
 	    eVadd="${v[0]}";
             eVref="${v[1]}";
@@ -600,7 +605,10 @@ if [ "$d" == "live" ]; then
           for i in $y
           do
                line="${CGT}${j};${posC}H $disc"
-               line+=" $i"
+#  need to clean up this hard-coded hack which prevents long urls from overprinting
+#  compute the true size accounting for the non-printing color sequinces 
+	       n=${i:0:22}
+               line+=" $n"
                filler=$(($size - ( ${#disc} + ${#i} ) ))
                while [ $filler -gt 0 ]
                do
