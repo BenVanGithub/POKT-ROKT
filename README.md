@@ -3,7 +3,7 @@
 ![Rocket](/POKT-ROKT.png)
 Format: ![Alt Text](url)
 
-Version 9.C
+Version 9.C  2020/09/28
 - fixed intermittant issue causing external nodes to appear 
   unjailed when they were jailed.
 - several display field size adjustments
