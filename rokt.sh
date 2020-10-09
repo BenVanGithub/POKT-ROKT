@@ -76,7 +76,7 @@ tmenu="static"
 lscreen=(
 	"STA,C,4,3,25,1,CurSTA,Status: "
 	"VAL,C,7,3,63,1,CurVAL,Validator address: "
-        "BAL,NC,8,3,37,1,CurBAL,Validator ballance: "	
+        "BAL,NC,8,3,37,1,CurBAL,Validator balance: "	
 	"RUN,N,4,25,20,1,CurRUN,(PID): "
 	"DOM,C,3,3,41,1,CurDOM,Domain: "
 	"HEI,N,4,65,20,1,CurHEI,Local Height: "
