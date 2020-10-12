@@ -1,7 +1,8 @@
 #!/usr/bin/bash
-# rokt9b 
+# rokt9cx 
 # ========================================
 function loadExternalValidators {
+
 # = = = = manually edit / insert external nodes into eVALS list: max = 15
 # format = 
 #             <doublequote>
@@ -14,8 +15,7 @@ function loadExternalValidators {
 #
 # Sample:
 #         "e09ce22e0abfd8129776128c0c9b3836024d8c6e,01,POKT1,node1.mainnet.pocket.network,unk,unk"
-
-
+# some preloaded nodes below... replace or remove them... 
 # = = = = 
         eVALS=(
         "e09ce22e0abfd8129776128c0c9b3836024d8c6e,01,POKT1,node1.mainnet.pocket.network,unk,unk"
@@ -70,9 +70,12 @@ function initWindow {
 function setGlobalVars {
 export LC_NUMERIC="en_US.UTF-8"
 breakOnError="false"
+autoRestart="false"
 LastHeight="0"
 prow="38"
 tmenu="static"
+restartCounter=0
+CurAUT="$restartCounter"
 lscreen=(
 	"STA,C,4,3,25,1,CurSTA,Status: "
 	"VAL,C,7,3,63,1,CurVAL,Validator address: "
@@ -87,6 +90,7 @@ lscreen=(
 	"CLA,AD,12,71,6,16,CurCLA,"
 	"CLB,AD,12,77,11,16,CurCLB,- "
 	"STK,C,8,65,21,1,CurSTK,Staked: "
+	"AUT,N,9,65,21,1,CurAUT,Restarts: "
 	"24B,NC,8,38,24,1,Cur24B,24h Chg: "
 	"VVV,AS,12,2,26,16,eVALS,"
 	"NUM,N,5,43,20,1,CurNUM,Staked Vals: "
@@ -96,7 +100,7 @@ lscreen=(
 	"CHU,AD,12,36,27,16,CurCHU,= "
         )
 lscreentext=(
-	"0,1,ROKT v0.9.c - Ben@BenVan.com 2020/09/28 - Free and Open Source... enjoy!"
+	"0,1,ROKT v0.9.c.x - Ben@BenVan.com 2020/10/12 - Free and Open Source... enjoy!"
 	"10,4,External Validators "
 	"10,38,local chains.json "
 	"11,30,Chain =  URL"
@@ -106,7 +110,7 @@ lscreentext=(
         )
 
 qscreentext=(
-        "0,1,ROKT v0.9.c - Ben@BenVan.com 2020/09/28 - Free and Open Source... enjoy!"
+        "0,1,ROKT v0.9.c.x - Ben@BenVan.com 2020/10/12 - Free and Open Source... enjoy!"
 	"3,5,Queries (see stuff)"
 	"3,33,Actions (do stuff)"
 	"3,68,Changes (break stuff)"
@@ -142,6 +146,8 @@ qscreentext=(
 	"11,30,DIR - ${CYA}dir${NC}ect chain.json relays"
 	"12,30,BRY - ${CYA}Br${NC}eak on error (${CYA}Y${NC}ES)"
 	"13,30,BRN - ${CYA}Br${NC}eak on error (${CYA}N${NC}O)"	
+	"14,30,AUT - ${CYA}Au${NC}to Restart (${CYA}T${NC}rue)"
+        "15,30,AUF - ${CYA}Au${NC}to Restart (${CYA}F${NC}alse)"
 	"18,66,X - ${RED}EXIT${NC}"
 	
 
@@ -279,6 +285,16 @@ function showTime  {
 # ========================================================================
 # ==    All the case calls
 #=========================================================================
+function fSta {
+        $(pocket start >/dev/null &)
+        fRun
+        CurSTA="Launched into Background"
+        if [ "$localVAL" == "external" ];
+        then
+           CurSTA="        "
+        fi
+
+}
 function fRun {
         CurRUN=$(ps -C pocket | grep "pocket")
         CurRUN="${CurRUN:0:7}"
@@ -288,6 +304,16 @@ function fRun {
 		CurSTA="${GRN}Running local${NC}"
   	else 
 		CurSTA="${RED}Not Running${NC}"
+		if [ "$autoRestart" == "true" ]
+		then
+			let "restartCounter = $restartCounter + 1"
+			CurAUT="$restartCounter"
+			CurSTA="${NC}RESTARTING${NC}"
+			showlmenu RUN one $tmenu
+			sleep 5
+			$(pocket start >/dev/null &)
+
+		fi
   	fi
         if [ "$localVAL" == "external" ]; 
 	then
@@ -300,16 +326,6 @@ function fRun {
 		CurSTA="        "
 		fi 
         fi
-}
-function fSta {
-  	$(pocket start >/dev/null &)
-  	fRun
-  	CurSTA="Launched into Background"
-        if [ "$localVAL" == "external" ]; 
-	then
-           CurSTA="        "
-        fi
-
 }
 function fRes {
         $(pocket reset)  || error_exit "Reset failed @line $LINENO."
@@ -435,7 +451,7 @@ function fChj {
 	  case "${CurCHJ[i]}" in
 	  0001 ) 
 		  PokBlockHeight=""
-                 PokBlockHeight=$(curl -s -m 1 -XPOST "${CurCHU[$i]}/v1/query/height" | grep -Po '((?<=height":.)|(?<=height":."))([^",\r\n]+)(?=[",\r\n]*)')
+                 PokBlockHeight=$(curl -s -m 2 -XPOST "${CurCHU[$i]}/v1/query/height" | grep -Po '((?<=height":.)|(?<=height":."))([^",\r\n]+)(?=[",\r\n]*)')
 
 		if [ "$PokBlockHeight" != "" ]
                 then
@@ -445,7 +461,7 @@ function fChj {
                 fi
                 if [ "$fullText" == "full" ]
 		then
-		  echo $(curl -s -m 1 -XPOST "${CurCHU[$i]}/v1/query/height")
+		  echo $(curl -s -m 2 -XPOST "${CurCHU[$i]}/v1/query/height")
 		fi
 	  ;;
 	  0021 ) EthBlockHeight=""
@@ -466,7 +482,7 @@ function fChj {
 }
 function fE00 {
 
-        CurEHEI=$(curl -s -m 1 http://$1:26657/status | grep -Po '((?<=latest_block_height":.)|(?<=latest_block_height":."))([^",\r\n]+)(?=[",\r\n]*)')
+        CurEHEI=$(curl -s -m 2 http://$1:26657/status | grep -Po '((?<=latest_block_height":.)|(?<=latest_block_height":."))([^",\r\n]+)(?=[",\r\n]*)')
 
 }
 
@@ -684,7 +700,7 @@ until [ "$selection" == "X" ]; do
     echo -e "${CGH}$Cmenu"    #draw the current menu
     read -t 0.5 -n 100 discard
     echo -e -n "${CGT}${prow};3H${GRN}(111=menu) selection:${NC}      ${CGT}${prow};25H"   #draw the prompt
-    read -n3 -t10 selection                                            #get the choice
+    read -n3 -t20 selection                                            #get the choice
     selection=${selection^^}    #uppercase the choice
     selection=${selection:0:3}
     case $tmenu in
@@ -723,19 +739,12 @@ until [ "$selection" == "X" ]; do
 	SIM ) $(pocket start --simulateRelay >/dev/null &)
 	        echo -e "${CYA}pocket simuateRelay started in background${NC}"
 	;;
-	AUT ) until $(pocket start >/dev/null &); do
-		outcode = $?
-		if [$outcode != 0]
-		then
-		    echo "process crashed with exit code: $outcode.  Respawning.." >&2
-		    outcode = 0
-		else
-		    echo "else clause executed code: $outcode."
-		    outcode = 0
-		    break
-		fi
-		done
-        ;;
+	AUT ) autoRestart="true"
+                echo -e "Auto Restart :${CYA}$autoRestart${NC}"
+	;;
+        AUF ) autoRestart="false"
+                echo -e "Auto Restart :${CYA}$autoRestart${NC}"
+	;;
 	STO ) pkill "pocket"  # should find a safer way to kill this!!
 	;;
 	HEI ) fHei
