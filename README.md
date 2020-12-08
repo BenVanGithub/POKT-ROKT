@@ -1,8 +1,9 @@
 # POKT-ROKT
 
-![Rocket](/Screenshot from 2020-12-08 16-16-29.png)
+![Rocket](/ROKT2.png)
 Format: ![Alt Text](url)
-![Rocket](/Screenshot from 2020-12-08 16-15-56.png)
+
+![Rocket](/ROKT1.png)
 Format: ![Alt Text](url)
 
 Release notes: POKT-ROKT  Version 1.0
