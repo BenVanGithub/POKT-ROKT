@@ -1,5 +1,5 @@
 #!/usr/bin/bash
-# rokt.v1.0
+# rokt.v1.0.1
 # ========================================
 function loadExternalValidators {
 
@@ -100,7 +100,7 @@ lscreen=(
 	"CHU,AD,12,36,27,16,CurCHU,= "
         )
 lscreentext=(
-	"0,1,ROKT v1.0 - Ben@BenVan.com 2020/Dec/08 - Free and Open Source... enjoy!"
+	"0,1,ROKT v1.0.1 - Ben@BenVan.com 2020/Dec/08 - Free and Open Source... enjoy!"
 	"10,4,External Validators "
 	"10,38,local chains.json "
 	"11,30,Chain =  URL"
@@ -110,7 +110,7 @@ lscreentext=(
         )
 
 qscreentext=(
-        "0,1,ROKT v1.0 - Ben@BenVan.com 2020/Dec/08 - Free and Open Source... enjoy!"
+        "0,1,ROKT v1.0.1 - Ben@BenVan.com 2020/Dec/08 - Free and Open Source... enjoy!"
 	"3,5,Queries (see stuff)"
 	"3,33,Actions (do stuff)"
 	"3,68,Changes (break stuff)"
@@ -402,8 +402,8 @@ function fCla {
 }
 function fCer {
 	echo -ne "${CGT}1;1H"
-	echo | openssl s_client -servername ${CurDOM} -connect ${CurDOM}:443 2>/dev/null | openssl x509 -noout -dates | grep 'After'
-	echo $Expire
+	certDOM=${CurDOM:8:999}
+	echo | openssl s_client -servername $certDOM -connect $certDOM 2>/dev/null | openssl x509 -noout -dates | grep 'After'
 }
 function fStk {
 	CurSTK=$(pocket query node $CurVAL | grep -Po '((?<=status":.)|(?<=status":."))([^",\r\n]+)(?=[",\r\n]*)') || error_exit "query node failed @line $LINENO."
@@ -966,4 +966,3 @@ done
     createMenuStrings
     initWindow
     main
-
