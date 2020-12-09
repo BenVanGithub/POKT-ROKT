@@ -6,6 +6,8 @@ Format: ![Alt Text](url)
 ![Rocket](/ROKT1.png)
 Format: ![Alt Text](url)
 
+V1.0.1 =Certificate error fixed.
+
 Release notes: POKT-ROKT  Version 1.0
 
 This is the last release of the ROKT in Bash.  All future development will be done in GO.
